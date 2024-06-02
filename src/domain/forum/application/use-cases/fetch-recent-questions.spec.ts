@@ -1,6 +1,6 @@
 import { InMemoryQuestionsRepository } from "test/repositories/in-memory-questions-repositories";
 import { makeQuestion } from "test/factories/make-questions";
-import { FetchRecentQuestionsUseCase } from "./fecth-recent-questions";
+import { FetchRecentQuestionsUseCase } from "./fetch-recent-questions";
 
 let inMemoryQuestionsRepository: InMemoryQuestionsRepository;
 let sut: FetchRecentQuestionsUseCase;
