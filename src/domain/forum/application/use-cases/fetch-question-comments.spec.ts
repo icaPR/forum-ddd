@@ -24,25 +24,25 @@ describe("Fetch question comments", async () => {
       makeQuestionComment({ questionId: new UniqueEntityID("question1") })
     );
 
-    const { questionComments } = await sut.handle({
+    const result = await sut.handle({
       questionId: "question1",
       page: 1,
     });
 
-    expect(questionComments).toHaveLength(2);
+    expect(result.value?.questionComments).toHaveLength(2);
   });
 
   it("should be able to fetch pagination question comments", async () => {
-    for (let i = 1; 1 < 22; i++) {
+    for (let i = 1; i <= 22; i++) {
       await inMemoryQuestionCommentsRepository.create(
         makeQuestionComment({ questionId: new UniqueEntityID("question1") })
       );
     }
 
-    const { questionComments } = await sut.handle({
+    const result = await sut.handle({
       questionId: "question1",
       page: 2,
     });
-    expect(questionComments).toHaveLength(2);
+    expect(result.value?.questionComments).toHaveLength(2);
   });
 });

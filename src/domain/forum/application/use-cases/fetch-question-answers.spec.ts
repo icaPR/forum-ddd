@@ -23,22 +23,22 @@ describe("Fetch question answer", async () => {
       makeAnswer({ questionId: new UniqueEntityID("question1") })
     );
 
-    const { answers } = await sut.handle({ questionId: "question1", page: 1 });
+    const result = await sut.handle({ questionId: "question1", page: 1 });
 
-    expect(answers).toHaveLength(2);
+    expect(result.value?.answers).toHaveLength(2);
   });
 
   it("should be able to fetch pagination question answers", async () => {
-    for (let i = 1; 1 < 22; i++) {
+    for (let i = 1; i <= 22; i++) {
       await inMemoryAnswerRepository.create(
         makeAnswer({ questionId: new UniqueEntityID("question1") })
       );
     }
 
-    const { answers } = await sut.handle({
+    const result = await sut.handle({
       questionId: "question1",
       page: 1,
     });
-    expect(answers).toHaveLength(20);
+    expect(result.value?.answers).toHaveLength(20);
   });
 });
