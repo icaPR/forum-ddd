@@ -1,6 +1,8 @@
 import { InMemoryQuestionCommentsRepository } from "test/repositories/in-memory-question-comment-repositories";
 import { makeQuestionComment } from "test/factories/make-question-comment";
 import { DeleteQuestionCommentUseCase } from "./delete-question-comment";
+import { UniqueEntityID } from "@/core/entities/unique-entity-id";
+import { NotAllowedError } from "./errors/not-allowed-error";
 
 let inMemoryQuestionCommentsRepository: InMemoryQuestionCommentsRepository;
 let sut: DeleteQuestionCommentUseCase;
@@ -21,5 +23,19 @@ describe("Delete question comment", async () => {
       authorId: questionComment.authorId.toString(),
     });
     expect(inMemoryQuestionCommentsRepository.item).toHaveLength(0);
+  });
+  it("should not be able to delete a question comment", async () => {
+    const answerComment = makeQuestionComment({
+      authorId: new UniqueEntityID("author1"),
+    });
+    await inMemoryQuestionCommentsRepository.create(answerComment);
+
+    const result = await sut.handle({
+      questionCommentId: answerComment.id.toString(),
+      authorId: "author2",
+    });
+
+    expect(result.isLeft()).toBe(true);
+    expect(result.value).toBeInstanceOf(NotAllowedError);
   });
 });

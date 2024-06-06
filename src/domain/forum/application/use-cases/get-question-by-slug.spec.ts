@@ -13,10 +13,15 @@ describe("Get question by slug", async () => {
 
   it("should be able to get a question by slug ", async () => {
     const newQuestion = makeQuestion();
-    inMemoryQuestionsRepository.create(newQuestion);
-    const { question } = await sut.handle({ slug: "example-question" });
+    await inMemoryQuestionsRepository.create(newQuestion);
 
-    expect(question.id).toBeTruthy();
-    expect(question.title).toEqual(newQuestion.title);
+    const result = await sut.handle({ slug: "example-question" });
+
+    expect(result.isRight()).toBe(true);
+    expect(result.value).toMatchObject({
+      question: expect.objectContaining({
+        title: newQuestion.title,
+      }),
+    });
   });
 });

@@ -11,13 +11,13 @@ describe("Create an answer ", async () => {
   });
 
   it("should be able to create an answer ", async () => {
-    const { answer } = await sut.handle({
+    const result = await sut.handle({
       questionId: "1",
       instructorId: "1",
       content: "Content",
     });
 
-    expect(answer.content).toEqual("Content");
-    expect(inMemoryAnswerRepository.item[0].id).toEqual(answer.id);
+    expect(result.isRight()).toBe(true);
+    expect(inMemoryAnswerRepository.item[0]).toEqual(result.value?.answer);
   });
 });
