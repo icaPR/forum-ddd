@@ -3,14 +3,23 @@ import { makeAnswer } from "test/factories/make-answer";
 import { InMemoryAnswerRepository } from "test/repositories/in-memory-answer-repositories";
 import { EditAnswerUseCase } from "./edit-answer";
 import { NotAllowedError } from "./errors/not-allowed-error";
+import { InMemoryAnswerAttachmentRepository } from "test/repositories/in-memory-answer-attachment-repository";
 
 let inMemoryAnswersRepository: InMemoryAnswerRepository;
+let inMemoryAnswerAttachmentRepository: InMemoryAnswerAttachmentRepository;
 let sut: EditAnswerUseCase;
 
 describe("Edit answer", async () => {
   beforeEach(() => {
-    inMemoryAnswersRepository = new InMemoryAnswerRepository();
-    sut = new EditAnswerUseCase(inMemoryAnswersRepository);
+    inMemoryAnswersRepository = new InMemoryAnswerRepository(
+      inMemoryAnswerAttachmentRepository
+    );
+    inMemoryAnswerAttachmentRepository =
+      new InMemoryAnswerAttachmentRepository();
+    sut = new EditAnswerUseCase(
+      inMemoryAnswersRepository,
+      inMemoryAnswerAttachmentRepository
+    );
   });
 
   it("should be able to edit a question", async () => {
@@ -24,11 +33,19 @@ describe("Edit answer", async () => {
       authorId: "author1",
       answerId: newAnswer.id.toValue(),
       content: "content",
+      attachmentsIds: ["1", "3"],
     });
 
     expect(inMemoryAnswersRepository.item[0]).toMatchObject({
       content: "content",
     });
+    expect(
+      inMemoryAnswersRepository.item[0].attachments.currentItems
+    ).toHaveLength(2);
+    expect(inMemoryAnswersRepository.item[0].attachments.currentItems).toEqual([
+      expect.objectContaining({ attachmentId: new UniqueEntityID("1") }),
+      expect.objectContaining({ attachmentId: new UniqueEntityID("3") }),
+    ]);
   });
   it("should not be able to edit a question from another user", async () => {
     const newAnswer = makeAnswer(
@@ -41,6 +58,7 @@ describe("Edit answer", async () => {
       authorId: "author2",
       answerId: newAnswer.id.toValue(),
       content: "content",
+      attachmentsIds: ["1", "3"],
     });
 
     expect(result.isLeft()).toBe(true);
