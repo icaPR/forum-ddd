@@ -3,7 +3,7 @@ import { Either, right } from "@/core/either";
 import { Notification } from "../../enterprise/entities/notfication";
 import { NotificationsRepository } from "../repositories/notifications-repository";
 
-interface SendNotificationUseCaseReq {
+export interface SendNotificationUseCaseReq {
   recipientId: string;
   title: string;
   content: string;
